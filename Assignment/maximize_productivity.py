@@ -3,7 +3,7 @@ import itertools
 import sys
 
 if len(sys.argv) != 2:
-    print("Usage: python maximize_workers.py <input_file>")
+    print("Usage: python maximize_productivity.py  <input_file>")
     exit(1)
 
 df = pd.read_excel(sys.argv[1], index_col=0)
