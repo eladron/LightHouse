@@ -21,6 +21,10 @@ print(f"Stations: {stations}")
 workers = list(df.index)
 print(f"Workers: {workers}")
 
+if len(workers) != sum(station_counts):
+    print("The number of workers should be equal to the number of stations.")
+    exit(1)
+
 # Create a list of station types
 station_types = []
 for i, count in enumerate(station_counts):
