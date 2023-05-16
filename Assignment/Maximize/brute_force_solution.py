@@ -57,3 +57,28 @@ for j, worker in enumerate(workers):
     station_type = best_assignment[j]
     print(f"{worker}: station {station_type+1}")
 print(f"Score: {best_score}")
+
+if problem.status == pulp.LpStatusOptimal:
+    print("Maximum grade achieved:", pulp.value(problem.objective))
+    for i in range(1, 21):
+        if i in places_for_station_water:
+            for w in workers:
+                if pulp.value(assign[w][2]) == 1 and workers_names[w] not in assigned_workers:
+                    print("Worker", workers_names[w], "assigned to Station",f"{i},",stations_names[2])
+                    assigned_workers.append(workers_names[w])
+                    break
+        else:
+            for w in workers:
+                if workers_names[w] not in assigned_workers:
+                    assigned = 0
+                    for s in stations:
+                        if assign[w][s] == 1:
+                            assigned = s
+                            break
+                    print(assigned)
+                    print("Worker", workers_names[w], "assigned to Station",f"{i},",stations_names[assigned])
+                    assigned_workers.append(workers_names[w])
+                    break
+
+else:
+    print("No optimal solution found.")
