@@ -7,7 +7,8 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
-//import axios from 'axios';
+import axios from 'axios';
+import { API_URL } from '../../../utils';
 
 export interface MenuPageProps {
     changePage(newPage: number): void;
@@ -17,9 +18,7 @@ export const MenuPage: React.FC<MenuPageProps> = ({
 }) => {
 
     const [tableValues, setTableValues] = React.useState<Array<Array<number>>>([
-        // Row 1
         [0, 0, 0, 0, 0],
-        // Row 2
         [0, 0, 0, 0, 0],
     ]);
 
@@ -39,19 +38,40 @@ export const MenuPage: React.FC<MenuPageProps> = ({
         setHours(Number(value));
     };
 
-    const handleFileChange = (event:any) => {
+    const handleFileChange = (event: any) => {
         const file = event.target.files[0];
         setSelectedFile(file);
     };
 
-    const handleSubmit = (event:any) => {
-        
+    const handleSubmit = async (event: any) => {
+        event.preventDefault();
+        axios.defaults.withCredentials = true;
+        const formData = new FormData();
+        formData.append('file', selectedFile ? selectedFile : "");
+        formData.append('hours', hours.toString());
+        formData.append('tableValues', JSON.stringify(tableValues));
+        console.log(formData);
+        await axios.post(`${API_URL}/api/calculate`, formData, {
+            headers: { 'Content-Type': 'multipart/form-data' }
+        })
+            .then(res => {
+                if (res.status === 200) {
+                    //changePage(1);
+                }
+            })
+            .catch(err => {
+                if (err.response.status === 400) {
+                    //setError('Please fill in all the fields');
+                } else {
+                    //setError(err.response.data.message);
+                }
+            })
     };
 
     return (
         <div>
             <div style={{ display: 'flex', justifyContent: 'center' }}>
-                <Table style={{ width: '70%' }}>
+                <Table style={{ width: '70%', marginTop: '30px' }}>
                     <TableHead>
                         <TableRow>
                             <TableCell align='center'>
@@ -122,7 +142,8 @@ export const MenuPage: React.FC<MenuPageProps> = ({
             </div>
             <div style={{ display: 'flex', justifyContent: 'center', marginTop: '50px' }}>
                 <Button variant="contained" color="primary" size="large"
-                    style={{ fontSize: '1.5rem', padding: '16px 32px', minWidth: '240px' }}>
+                    style={{ fontSize: '1.5rem', padding: '16px 32px', minWidth: '240px' }}
+                    onClick={handleSubmit}>
                     הרץ אלגוריתם
                 </Button>
             </div>
@@ -130,3 +151,7 @@ export const MenuPage: React.FC<MenuPageProps> = ({
     );
 }
 
+let json = {
+    1: "yossi",
+    
+}
