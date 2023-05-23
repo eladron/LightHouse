@@ -1,6 +1,7 @@
 import React from 'react';
 import '../../App.css';
 import { MenuPage } from './MenuPage/MenuPage';
+import { ResultPage } from './ResultPage';
 
 
 export interface PageLayoutProps {
@@ -15,7 +16,7 @@ export const PageLayout: React.FC<PageLayoutProps> = ({
         case 0:
             return <MenuPage changePage={changePage}/>
         case 1:
-            return null;
+            return <ResultPage changePage={changePage}/>;
         default:
             return null;
 

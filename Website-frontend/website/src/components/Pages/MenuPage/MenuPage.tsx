@@ -9,6 +9,7 @@ import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import axios from 'axios';
 import { API_URL } from '../../../utils';
+import SelectInput from '@mui/material/Select/SelectInput';
 
 export interface MenuPageProps {
     changePage(newPage: number): void;
@@ -23,7 +24,7 @@ export const MenuPage: React.FC<MenuPageProps> = ({
     ]);
 
     const [hours, setHours] = React.useState<number>(0);
-    const [selectedFile, setSelectedFile] = React.useState(null);
+    const [selectedFile, setSelectedFile] = React.useState<File | null>(null);
 
     const handleValueChange = (rowIndex: number, colIndex: number, value: String) => {
         // Create a copy of the current tableValues array
@@ -46,26 +47,27 @@ export const MenuPage: React.FC<MenuPageProps> = ({
     const handleSubmit = async (event: any) => {
         event.preventDefault();
         axios.defaults.withCredentials = true;
-        const formData = new FormData();
-        formData.append('file', selectedFile ? selectedFile : "");
-        formData.append('hours', hours.toString());
-        formData.append('tableValues', JSON.stringify(tableValues));
-        console.log(formData);
-        await axios.post(`${API_URL}/api/calculate`, formData, {
-            headers: { 'Content-Type': 'multipart/form-data' }
-        })
-            .then(res => {
-                if (res.status === 200) {
-                    //changePage(1);
-                }
-            })
-            .catch(err => {
-                if (err.response.status === 400) {
-                    //setError('Please fill in all the fields');
-                } else {
-                    //setError(err.response.data.message);
-                }
-            })
+        // const formData = new FormData();
+        // formData.append('file', selectedFile ? selectedFile : "");
+        // formData.append('hours', hours.toString());
+        // formData.append('tableValues', JSON.stringify(tableValues));
+        // console.log(formData);
+        // await axios.post(`${API_URL}/api/calculate`, formData, {
+        //     headers: { 'Content-Type': 'multipart/form-data' }
+        // })
+        //     .then(res => {
+        //         if (res.status === 200) {
+        //             //changePage(1);
+        //         }
+        //     })
+        //     .catch(err => {
+        //         if (err.response.status === 400) {
+        //             //setError('Please fill in all the fields');
+        //         } else {
+        //             //setError(err.response.data.message);
+        //         }
+        //     })
+        changePage(1);
     };
 
     return (
@@ -91,7 +93,7 @@ export const MenuPage: React.FC<MenuPageProps> = ({
                             </TableCell>
                             <TableCell align='center'>
                                 <Typography variant="subtitle1" fontWeight="bold">
-                                    ידית ישר
+                                    ידית ישרה
                                 </Typography>
                             </TableCell>
                         </TableRow>
@@ -129,7 +131,7 @@ export const MenuPage: React.FC<MenuPageProps> = ({
                     </div>
                     <div style={{ display: 'grid', gridTemplateColumns: 'max-content auto', alignItems: 'center' }}>
                         <Button variant="contained" component="label">
-                            העלה קובץ
+                            {selectedFile ? selectedFile.name : 'העלה קובץ'}
                             <input type="file" style={{ display: 'none' }}
                                 accept="application/vnd.ms-excel, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
                                 onChange={handleFileChange} />
@@ -149,9 +151,4 @@ export const MenuPage: React.FC<MenuPageProps> = ({
             </div>
         </div>
     );
-}
-
-let json = {
-    1: "yossi",
-    
 }
