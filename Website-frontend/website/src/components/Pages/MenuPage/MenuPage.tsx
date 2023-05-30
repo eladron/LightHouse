@@ -47,26 +47,26 @@ export const MenuPage: React.FC<MenuPageProps> = ({
     const handleSubmit = async (event: any) => {
         event.preventDefault();
         axios.defaults.withCredentials = true;
-        // const formData = new FormData();
-        // formData.append('file', selectedFile ? selectedFile : "");
-        // formData.append('hours', hours.toString());
-        // formData.append('tableValues', JSON.stringify(tableValues));
-        // console.log(formData);
-        // await axios.post(`${API_URL}/api/calculate`, formData, {
-        //     headers: { 'Content-Type': 'multipart/form-data' }
-        // })
-        //     .then(res => {
-        //         if (res.status === 200) {
-        //             //changePage(1);
-        //         }
-        //     })
-        //     .catch(err => {
-        //         if (err.response.status === 400) {
-        //             //setError('Please fill in all the fields');
-        //         } else {
-        //             //setError(err.response.data.message);
-        //         }
-        //     })
+        const formData = new FormData();
+        formData.append('file', selectedFile ? selectedFile : "");
+        formData.append('hours', hours.toString());
+        formData.append('tableValues', JSON.stringify(tableValues));
+        console.log(formData);
+        await axios.post(`${API_URL}/api/calculate`, formData, {
+            headers: { 'Content-Type': 'multipart/form-data' }
+        })
+            .then(res => {
+                if (res.status === 200) {
+                    //changePage(1);
+                }
+            })
+            .catch(err => {
+                if (err.response.status === 400) {
+                    //setError('Please fill in all the fields');
+                } else {
+                    //setError(err.response.data.message);
+                }
+            })
         changePage(1);
     };
 
