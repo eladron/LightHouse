@@ -57,7 +57,8 @@ export const MenuPage: React.FC<MenuPageProps> = ({
         })
             .then(res => {
                 if (res.status === 200) {
-                    //changePage(1);
+                    global.placements = res.data;
+                    changePage(1);
                 }
             })
             .catch(err => {
@@ -67,7 +68,6 @@ export const MenuPage: React.FC<MenuPageProps> = ({
                     //setError(err.response.data.message);
                 }
             })
-        changePage(1);
     };
 
     return (

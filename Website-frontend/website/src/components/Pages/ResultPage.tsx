@@ -1,6 +1,5 @@
 import React from 'react';
 import { Table, TableBody, TableCell, Typography, TableHead, TableRow, Paper } from '@mui/material';
-import { placements } from '../../utils';
 
 export interface ResultPageProps {
     changePage(newPage: number): void;
@@ -8,8 +7,8 @@ export interface ResultPageProps {
 export const ResultPage: React.FC<ResultPageProps> = ({
     changePage,
 }) => {
-
-    const sortedPlacements = Object.entries(placements).sort(([, a], [, b]) => a.worker - b.worker);
+    
+    const sortedPlacements = Object.entries(global.placements).sort(([, a], [, b]) => a.worker - b.worker);
 
     return (
         <div>
