@@ -35,7 +35,10 @@ app.use((req: Request, res: Response) => {
   res.status(404).send('404 Not Found').end();
 });
 
-//app.listen(port, () => {console.log(`Service listening on port ${port}`)});
-
 var httpsServer = https.createServer(credentials, app);
+
+console.log(`Service listening on port ${port}`);
+
+//use sudo nohup npm run start & 
+//to run the server indefinitley
 httpsServer.listen(port);
