@@ -1,5 +1,5 @@
 import '../../App.css';
-import { pages, API_URL } from '../../utils';
+import { pages } from '../../utils';
 import * as React from 'react';
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';

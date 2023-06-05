@@ -1,5 +1,5 @@
 import React from 'react';
-import { Table, TableBody, TableCell, Typography, TableHead, TableRow, Paper } from '@mui/material';
+import { Table, TableBody, TableCell, Typography, TableHead, TableRow } from '@mui/material';
 
 export interface ResultPageProps {
     changePage(newPage: number): void;

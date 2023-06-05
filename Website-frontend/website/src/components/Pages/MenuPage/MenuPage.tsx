@@ -9,7 +9,6 @@ import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import axios from 'axios';
 import { API_URL } from '../../../utils';
-import SelectInput from '@mui/material/Select/SelectInput';
 
 export interface MenuPageProps {
     changePage(newPage: number): void;
@@ -24,6 +23,9 @@ export const MenuPage: React.FC<MenuPageProps> = ({
     ]);
 
     const [hours, setHours] = React.useState<number>(0);
+    const [gain3, setGain3] = React.useState<number>(0);
+    const [gain4, setGain4] = React.useState<number>(0);
+    const [error, setError] = React.useState<String>("");
     const [selectedFile, setSelectedFile] = React.useState<File | null>(null);
 
     const handleValueChange = (rowIndex: number, colIndex: number, value: String) => {
@@ -39,6 +41,14 @@ export const MenuPage: React.FC<MenuPageProps> = ({
         setHours(Number(value));
     };
 
+    const handleGain3Change = (value: String) => {
+        setGain3(Number(value));
+    };
+
+    const handleGain4Change = (value: String) => {
+        setGain4(Number(value));
+    };
+
     const handleFileChange = (event: any) => {
         const file = event.target.files[0];
         setSelectedFile(file);
@@ -50,6 +60,8 @@ export const MenuPage: React.FC<MenuPageProps> = ({
         const formData = new FormData();
         formData.append('file', selectedFile ? selectedFile : "");
         formData.append('hours', hours.toString());
+        formData.append('gain3', gain3.toString());
+        formData.append('gain4', gain4.toString());
         formData.append('tableValues', JSON.stringify(tableValues));
         console.log(formData);
         await axios.post(`${API_URL}/api/calculate`, formData, {
@@ -64,9 +76,12 @@ export const MenuPage: React.FC<MenuPageProps> = ({
             .catch(err => {
                 console.log(err);
                 if (err.response.status === 400) {
-                    //setError('Please fill in all the fields');
-                } else {
-                    //setError(err.response.data.message);
+                    try {
+                        setError(err.response.data.message);
+                    }
+                    catch (err) {
+                        setError("שגיאה לא ידועה");
+                    }
                 }
             })
     };
@@ -123,21 +138,31 @@ export const MenuPage: React.FC<MenuPageProps> = ({
             </div>
             <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '70px' }}>
                 <div style={{ display: 'grid', gridTemplateColumns: 'auto', gap: '20px', marginRight: '80px' }}>
-                    <div style={{ display: 'grid', gridTemplateColumns: 'max-content auto', alignItems: 'center' }}>
+                    <div style={{ display: 'flex', alignItems: 'center' }}>
+                        <TextField defaultValue="0" variant="outlined" style={{ marginRight: '20px' }} inputProps={{ style: { textAlign: 'center' } }}
+                            onChange={(e) => { handleGain4Change(e.target.value) }} />
+                        <Typography variant="subtitle1" style={{ marginRight: '20px', textAlign: 'right' }}>
+                            רווח מכונה 4 (ברגים)
+                        </Typography>
+                        <TextField defaultValue="0" variant="outlined" style={{ marginRight: '20px' }} inputProps={{ style: { textAlign: 'center' } }}
+                            onChange={(e) => { handleGain3Change(e.target.value) }} />
+                        <Typography variant="subtitle1" style={{ marginRight: '20px', textAlign: 'right' }}>
+                            רווח מכונה 3 (שלוקרים)
+                        </Typography>
                         <TextField defaultValue="8" variant="outlined" style={{ marginRight: '20px' }} inputProps={{ style: { textAlign: 'center' } }}
                             onChange={(e) => { handleHoursChange(e.target.value) }} />
                         <Typography variant="subtitle1" style={{ marginRight: '20px', textAlign: 'right' }}>
                             :הכנס מספר שעות עבודה
                         </Typography>
                     </div>
-                    <div style={{ display: 'grid', gridTemplateColumns: 'max-content auto', alignItems: 'center' }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'max-content auto', alignItems: 'center', justifyContent: 'flex-end' }}>
                         <Button variant="contained" component="label">
                             {selectedFile ? selectedFile.name : 'העלה קובץ'}
                             <input type="file" style={{ display: 'none' }}
                                 accept="application/vnd.ms-excel, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
                                 onChange={handleFileChange} />
                         </Button>
-                        <Typography variant="subtitle1" style={{ marginRight: '20px', textAlign: 'right' }}>
+                        <Typography variant="subtitle1" style={{ marginRight: '20px', marginLeft: '24px', textAlign: 'right' }}>
                             :העלה קובץ אקסל
                         </Typography>
                     </div>
@@ -149,6 +174,9 @@ export const MenuPage: React.FC<MenuPageProps> = ({
                     onClick={handleSubmit}>
                     הרץ אלגוריתם
                 </Button>
+                {error ? <Typography variant="subtitle1">
+                    {error}
+                </Typography> : null}
             </div>
         </div>
     );
