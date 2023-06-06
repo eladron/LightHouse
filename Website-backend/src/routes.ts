@@ -12,11 +12,15 @@ export const calcPlacements = async (req: Request, res: Response) => {
     console.log(hours);
     const tableValues = JSON.parse(req.body.tableValues);
     console.log(tableValues);
+    const gain3 = req.body.gain3;
+    console.log(gain3);
+    const gain4 = req.body.gain4;
+    console.log(gain4);
     const IN_FILE_PATH = join(__dirname,"/../", "input.xlsx");
     writeFileSync(IN_FILE_PATH, file.buffer, {
       flag: 'w',
     });
-    const proc = spawn('python3', ['/home/migdalor/LightHouse/Assignment/Maximize/maximize_productivity.py',IN_FILE_PATH, tableValues[0][0], tableValues[0][1], tableValues[0][2], tableValues[0][3], tableValues[1][0], tableValues[1][1], tableValues[1][2], tableValues[1][3], hours, tableValues[0][4], tableValues[1][4]]);
+    const proc = spawn('python3', ['/home/migdalor/LightHouse/Assignment/Maximize/maximize_productivity.py',IN_FILE_PATH, tableValues[0][0], tableValues[0][1], tableValues[0][2], tableValues[0][3], tableValues[1][0], tableValues[1][1], tableValues[1][2], tableValues[1][3], hours, gain3, gain4]);
     /**proc.stdout.on('data', (data) => {
       console.log(`stdout: ${data}`);
     });
