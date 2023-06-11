@@ -20,6 +20,8 @@ def preprocess():
     df = pd.read_excel(sys.argv[1], index_col=0)
     df.replace("#",-1000000, inplace=True)
     df.replace("- ∞", -1000000, inplace=True)
+    df = df.loc[df.iloc[:, 0] != 0]
+    df = df.iloc[:, 1:] # Remove the first column after it
     df = df.applymap(replace_string_with_integer)
     df.drop(columns = df.columns[-1], inplace=True)
     station_counts = list(df.iloc[-1])
@@ -30,41 +32,28 @@ def preprocess():
     return df, station_counts, workers_names, stations_names
 
 
-def main():
-    if len(sys.argv) != 13:
-        print("Usage: python maximize_productivity.py  <input_file> <Amount1> <Amount2> <Amount3> <Amount4> <reserve1> <reserve2> <reserve3> <reserve4> <hours> <profit3> <profit4>")
-        exit(1)
+def generate_arrays(i, n):
+    if n == 1:
+        yield [i]
+        return
+    for j in range(i + 1):
+        for arr in generate_arrays(i - j, n - 1):
+            yield [j] + arr
 
-    df, station_counts, workers_names, stations_names  = preprocess()
 
-    # define the problem
-    problem = pulp.LpProblem("Worker_Station_Assignment", pulp.LpMaximize)
-
-    # create the decision variables
+def solve(workers_names, stations_names, station_counts, prod, Q, P, T, S):
     workers = range(len(workers_names))
     stations = range(len(stations_names))
-    data = {}
-
-    Q = [int(sys.argv[2]), int(sys.argv[3]), int(sys.argv[4]), int(sys.argv[5])] #  needed_amount
-    P = [int(sys.argv[6]), int(sys.argv[7]), int(sys.argv[8]), int(sys.argv[9])] # reservers
-    T = float(sys.argv[10])
-    S = [float(sys.argv[11]), float(sys.argv[12])]
-    places_for_station_water = [1, 2, 5]
-    print(f"Q = {Q}")
-    print(f"P = {P}")
-    print(f"T = {T}")
-    print(f"S = {S}")
 
 
+    problem = pulp.LpProblem("Worker_Station_Assignment", pulp.LpMaximize)
+    # create the decision variables
     assign = pulp.LpVariable.dicts("Assign", (workers, stations), lowBound=0, upBound=1, cat=pulp.LpInteger)
-
-    # define the objective function to maximize the total grade
-    prod = [list(df.loc[worker]) for worker in workers_names]
-
-    objective = pulp.lpSum(((prod[i][2] * assign[i][2] * S[0] + prod[i][3] * assign[i][3] * S[1]) * T) for i in range(20))
+    
+    objective = pulp.lpSum(((prod[i][2] * assign[i][2] * S[0] + prod[i][3] * assign[i][3] * S[1]) * T) for i in workers)
     problem += objective
 
-    # add the constraints
+        # add the constraints
     for w in workers:
         problem += pulp.lpSum(assign[w][s] for s in stations) == 1 # every worker is assigned to exactly one station
     for s in stations:
@@ -80,22 +69,71 @@ def main():
     solver = pulp.PULP_CBC_CMD(msg=0)
     problem.solve(solver=solver)
     count = 0
-    random_workers = random.sample(workers, 20)
     while (problem.status != pulp.LpStatusOptimal):
-        print("Solution not found, removing constraint")
+        if len(problem.constraints) == 20:
+            return 0, None
         problem.constraints.popitem()
-        if len(problem.constraints) == 27:
-            print("No solution found")
-            exit(1)
         count += 1
         problem.solve(solver=solver)
-    print(f"Soultion found with {count} constraints removed")
+    print(f"Number of constraints removed: {count}")
+    return pulp.value(problem.objective), assign
+
+
+def main():
+    if len(sys.argv) != 13:
+        print("Usage: python maximize_productivity.py  <input_file> <Amount1> <Amount2> <Amount3> <Amount4> <reserve1> <reserve2> <reserve3> <reserve4> <hours> <profit3> <profit4>")
+        exit(1)
+
+    df, station_counts, workers_names, stations_names  = preprocess()
+
+    # define the problem
+
+    # create the decision variables
+
+    data = {}
+
+    Q = [int(sys.argv[2]), int(sys.argv[3]), int(sys.argv[4]), int(sys.argv[5])] #  needed_amount
+    P = [int(sys.argv[6]), int(sys.argv[7]), int(sys.argv[8]), int(sys.argv[9])] # reservers
+    T = float(sys.argv[10])
+    S = [float(sys.argv[11]), float(sys.argv[12])]
+    print(f"Q = {Q}")
+    print(f"P = {P}")
+    print(f"T = {T}")
+    print(f"S = {S}")
+    places_for_station_water = [1, 2, 5]
+
+
+
+
+    best_productivity = 0
+    best_assign = None
+
+    # define the objective function to maximize the total grade
+    prod = [list(df.loc[worker]) for worker in workers_names]
+    n = len(stations_names)
+    i = 20 - len(workers_names)
+    print(i)
+    for arr in generate_arrays(i, n):
+        new_station_counts = [station_counts[j] - arr[j] for j in range(n)]
+        product, assign = solve(workers_names, stations_names, new_station_counts, prod, Q, P, T, S)
+        if product > best_productivity:
+            best_productivity = product
+            best_assign = assign
+
+    if best_productivity == 0:
+        print("No solution found")
+        exit(1)
+
+    print("Total Productivity:", best_productivity)
+    workers = range(len(workers_names))
+    stations = range(len(stations_names))
+    random_workers = random.sample(workers, len(workers_names))
     assigned_workers = []
-    print("grade achieved:", pulp.value(problem.objective))
+
     for i in range(1, 21):
         if i in places_for_station_water:
             for w in random_workers:
-                if pulp.value(assign[w][2]) == 1 and workers_names[w] not in assigned_workers:
+                if pulp.value(best_assign[w][2]) == 1 and workers_names[w] not in assigned_workers:
                     print(f"Station {i},{stations_names[2]} is assigned with worker {workers_names[w]}")
                     insert_to_data(data, i, workers_names[w], stations_names[2])
                     assigned_workers.append(workers_names[w])
@@ -105,7 +143,7 @@ def main():
                 if workers_names[w] not in assigned_workers:
                     assigned = 0
                     for s in stations:
-                        if pulp.value(assign[w][s]) == 1:
+                        if pulp.value(best_assign[w][s]) == 1:
                             assigned = s
                             break
                     insert_to_data(data, i, workers_names[w], stations_names[assigned])
@@ -113,11 +151,10 @@ def main():
                     assigned_workers.append(workers_names[w])
                     break
     for s in stations:
-        made = P[s] + sum(pulp.value(assign[w][s]) * prod[w][s] * T for w in workers)
+        made = P[s] + sum(pulp.value(best_assign[w][s]) * prod[w][s] * T for w in workers)
         needed = Q[s] if s > 2 else Q[2]
         print(f"Station {s+1},{stations_names[s]} made {made} and needed {needed}")
     
-
     with open("output.json", 'w') as f:
         json.dump(data, f, indent=4)
 
