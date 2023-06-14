@@ -24,23 +24,35 @@ export const calcPlacements = async (req: Request, res: Response) => {
     /**proc.stdout.on('data', (data) => {
       console.log(`stdout: ${data}`);
     });
-    **/
+      **/
     proc.stderr.on('data', (data) => {
       console.error(`stderr: ${data}`);
     });
 
 
     proc.on('exit', function() {
-      const OUT_FILE_PATH = join(__dirname,"/../", "output.json");
-      const jsonString = readFileSync(OUT_FILE_PATH, 'utf-8');
-      const placements = JSON.parse(jsonString);
+      try
+      {
+        const OUT_FILE_PATH = join(__dirname,"/../", "output.json");
+        const jsonString = readFileSync(OUT_FILE_PATH, 'utf-8');
+        const placements = JSON.parse(jsonString);
 
-      console.log(placements);
+        if(proc.exitCode != 0)
+        {
+          throw new Error('algo failed unexpectedly!');
+        }
 
-      res.status(200);
-      res.setHeader('Content-Type', 'application/json');
-      res.write(JSON.stringify(placements));
-      res.end();
+        console.log(placements);
+
+        res.status(200);
+        res.setHeader('Content-Type', 'application/json');
+        res.write(JSON.stringify(placements));
+        res.end();
+      }
+      catch (error) {
+        console.log(error);
+        res.status(400).end('Bad Request')
+      }
     })
   } catch (error) {
     console.log(error);
