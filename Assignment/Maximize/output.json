@@ -1,0 +1,82 @@
+{
+    "1": {
+        "worker": 18,
+        "station": "water"
+    },
+    "2": {
+        "worker": 13,
+        "station": "water"
+    },
+    "3": {
+        "worker": 6,
+        "station": "screw"
+    },
+    "4": {
+        "worker": 14,
+        "station": "screw"
+    },
+    "5": {
+        "worker": 16,
+        "station": "water"
+    },
+    "6": {
+        "worker": 9,
+        "station": "screw"
+    },
+    "7": {
+        "worker": 1,
+        "station": "screw"
+    },
+    "8": {
+        "worker": 5,
+        "station": "screw"
+    },
+    "9": {
+        "worker": 8,
+        "station": "screw"
+    },
+    "10": {
+        "worker": 2,
+        "station": "handle"
+    },
+    "11": {
+        "worker": 10,
+        "station": "screw"
+    },
+    "12": {
+        "worker": 15,
+        "station": "screw"
+    },
+    "13": {
+        "worker": 19,
+        "station": "piston"
+    },
+    "14": {
+        "worker": 3,
+        "station": "handle"
+    },
+    "15": {
+        "worker": 12,
+        "station": "piston"
+    },
+    "16": {
+        "worker": 4,
+        "station": "handle"
+    },
+    "17": {
+        "worker": 20,
+        "station": "screw"
+    },
+    "18": {
+        "worker": 17,
+        "station": "piston"
+    },
+    "19": {
+        "worker": 11,
+        "station": "screw"
+    },
+    "20": {
+        "worker": 7,
+        "station": "screw"
+    }
+}
