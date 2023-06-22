@@ -58,7 +58,7 @@ def handle_workers_productivity(df: pd.DataFrame):
     for i in range(0, len(df.columns)):
         are_positive_integers = df.iloc[:, i].apply(lambda x: isinstance(x, int) and (x>0 or x == CANTWORK)).all()
         if not are_positive_integers:
-            error(f"העמודה {i+1}  אינה מכילה מספרים שלמים חיוביים למעט #")
+            error(f"העמודה {STATIONS_NAMES[i]}  # אינה מכילה מספרים שלמים חיוביים למעט")
 
 def preprocess():
     try:
@@ -228,9 +228,15 @@ def main():
     made = get_product_made(stations, workers,  P, best_assign, prod, T)
     for s in stations:
         print(f"{STATIONS_NAMES[s]} made {made[s]} and needed {Q[s]}")
+    data['product_piston'] = made[0]
+    data['product_handle'] = made[1] if made[1] < made[0] else made[0]
+    data['product_water'] = made[2] if made[2] < made[1] else made[1]
+    data['product_screw'] = made[3] 
     
     best_productivity = min(made[:3]) * S[0] + made[3] * S[1]
     print("Total Productivity:", best_productivity / 100)
+    data['revenue'] = best_productivity / 100
+
     print("Constrains removed:", best_count)
 
     with open("output.json", 'w') as f:
