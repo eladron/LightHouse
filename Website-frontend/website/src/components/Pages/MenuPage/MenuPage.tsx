@@ -11,6 +11,7 @@ import axios from 'axios';
 import { API_URL } from '../../../utils';
 import logoImage from '../../../migdal_or.png';
 import '../../../themes.css';
+import { subscribe } from 'diagnostics_channel';
 
 export interface MenuPageProps {
     changePage(newPage: number): void;
@@ -22,9 +23,19 @@ export const MenuPage: React.FC<MenuPageProps> = ({
     const [tableValues, setTableValues] = React.useState<Array<Array<number>>>([
         [0, 0, 0, 0, 0],
         [0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0],
     ]);
+
+    const [subtractionValues, setSubtractionValues] = React.useState<Array<number>>([0, 0, 0, 0]);
+
+    React.useEffect(() => {
+        setSubtractionValues(calculateSubtraction(tableValues));
+        console.log(subtractionValues)
+        }, [tableValues]);
+
     
     const [errorCells, setErrorCells] = React.useState<Array<Array<boolean>>>([
+        [false, false, false, false, false],
         [false, false, false, false, false],
         [false, false, false, false, false],
     ]);
@@ -43,9 +54,15 @@ export const MenuPage: React.FC<MenuPageProps> = ({
         return errorCells[0].includes(true) || errorCells[1].includes(true) || errorHours || errorGain3 || errorGain4 || selectedFile == null;
     }
 
+    const is_value_legit = (value: String, whole: Boolean = false) => {
+        if (whole) {
+            return !isNaN(Number(value)) && value !== "" && Number(value) >= 0 && Number(value) % 1 === 0;
+        }
+        return !isNaN(Number(value)) && value !== "" && Number(value) >= 0;
+    }
+
     const handleValueChange = (rowIndex: number, colIndex: number, value: String) => {
-        console.log(tableValues[rowIndex][colIndex]);
-        if (!isNaN(Number(value)) && value !== "") {
+        if (is_value_legit(value, true)) {
             // Create a copy of the current tableValues array
             const updatedTableValues = [...tableValues];
             // Update the value at the specified row and column index
@@ -108,7 +125,7 @@ export const MenuPage: React.FC<MenuPageProps> = ({
         formData.append('hours', hours.toString());
         formData.append('gain3', gain3.toString());
         formData.append('gain4', gain4.toString());
-        formData.append('tableValues', JSON.stringify(tableValues));
+        formData.append('tableValues', JSON.stringify(tableValues.slice(0, 2)));
         console.log(formData);
         await axios.post(`${API_URL}/api/calculate`, formData, {
             headers: { 'Content-Type': 'multipart/form-data' }
@@ -132,6 +149,24 @@ export const MenuPage: React.FC<MenuPageProps> = ({
             })
     };
 
+    const calculateSubtraction = (values: Array<Array<number>>): Array<number> => {
+        const row1Values = values[0];
+        const row2Values = values[1];
+        var subtraction = [0, 0, 0, 0];
+        for (let i = 0; i < 4; i++) {
+            if (errorCells[0][i] || errorCells[1][i]) {
+                subtraction[i] = 0;
+            }
+            else { 
+                subtraction[i] = row1Values[i] - row2Values[i];
+            }
+        }  
+        console.log(subtraction)
+        return subtraction;
+      };
+      
+    
+
     return (
         <div>
             <div style={{ display: 'flex', justifyContent: 'center' }}>
@@ -139,43 +174,53 @@ export const MenuPage: React.FC<MenuPageProps> = ({
                     <TableHead>
                         <TableRow>
                             <TableCell align='center'>
-                                <Typography variant="subtitle1" fontWeight="bold">
+                                <Typography variant="subtitle1" fontWeight="bold" fontSize={'20px'}>
                                     ברגים
                                 </Typography>
                             </TableCell>
                             <TableCell align='center'>
-                                <Typography variant="subtitle1" fontWeight="bold">
+                                <Typography variant="subtitle1" fontWeight="bold" fontSize={'20px'}>
                                     בדיקת מים
                                 </Typography>
                             </TableCell>
                             <TableCell align='center'>
-                                <Typography variant="subtitle1" fontWeight="bold">
+                                <Typography variant="subtitle1" fontWeight="bold" fontSize={'20px'}>
                                     בוכנה
                                 </Typography>
                             </TableCell>
                             <TableCell align='center'>
-                                <Typography variant="subtitle1" fontWeight="bold">
+                                <Typography variant="subtitle1" fontWeight="bold" fontSize={'20px'}>
                                     ידית ישר
                                 </Typography>
                             </TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {[1, 2].map((row, rowIndex) => (
+                        {[1, 2, 3].map((row, rowIndex) => (
                             <TableRow key={rowIndex}>
                                 {[1, 2, 3, 4, 5].map((col, colIndex) => (
-                                    <TableCell key={colIndex}>
+                                    <TableCell key={colIndex} style={{ textAlign: 'center', fontSize: '20px' }}>
                                         {colIndex === 4 && rowIndex === 0 ? (
                                             <b>כמות יחידות נדרשת</b>) :
                                             colIndex === 4 && rowIndex === 1 ? (
-                                                <b>כמות יחידות במלאי</b>) :
+                                                <b>כמות יחידות במלאי</b>) : 
+                                                rowIndex === 2 ?
+                                                (
+                                                        colIndex === 4 ? ( <b>הפרש</b>) : (
+                                                            subtractionValues[colIndex]
+                                                    )
+                                                )  :
                                                 (
                                                     <TextField defaultValue="0" variant="outlined"
-                                                        inputProps={{ style: { textAlign: 'center' } }}
+                                                        inputProps={{ style: { textAlign: 'center', fontSize: '20px' } }}
                                                         error={errorCells[rowIndex][colIndex]}
-                                                        helperText={errorCells[rowIndex][colIndex] ? 'הכנס מספר' : ''}
+                                                        helperText={errorCells[rowIndex][colIndex] ? 'הכנס מספר חיובי שלם' : ''}
+                                                        FormHelperTextProps={{ style: { textAlign: 'right' } }}
                                                         onChange={(e) =>
-                                                            handleValueChange(rowIndex, colIndex, e.target.value)} />
+                                                            handleValueChange(rowIndex, colIndex, e.target.value)}
+                                                        onFocus={(e) => e.target.value = ''} // Clear the value on focus
+                                                            />
+                                                            
                                                 )}
                                     </TableCell>
                                 ))}
@@ -187,36 +232,36 @@ export const MenuPage: React.FC<MenuPageProps> = ({
             <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '70px' }}>
                 <div style={{ display: 'grid', gridTemplateColumns: 'auto', gap: '20px', marginRight: '80px' }}>
                     <div style={{ display: 'flex', alignItems: 'center' }}>
-                        <TextField defaultValue="0" variant="outlined" style={{ marginRight: '20px' }} inputProps={{ style: { textAlign: 'center' } }}
+                        <TextField defaultValue="0" variant="outlined" style={{ marginRight: '20px' }} inputProps={{ style: { textAlign: 'center', fontSize: '20px' } }}
                             error={errorGain3}
-                            helperText={errorGain3 ? 'הכנס מספר' : ''}
+                            helperText={errorGain3 ? 'הכנס מספר חיובי' : ''}
                             onChange={(e) => { handleGain3Change(e.target.value) }} />
-                        <Typography variant="subtitle1" style={{ marginRight: '20px', textAlign: 'right' }}>
+                        <Typography variant="subtitle1" style={{ marginRight: '20px', textAlign: 'right' ,fontSize: '20px' }}>
                             <b>:רווח כספי עבור ברגים</b>
                         </Typography>
-                        <TextField defaultValue="0" variant="outlined" style={{ marginRight: '20px' }} inputProps={{ style: { textAlign: 'center' } }}
+                        <TextField defaultValue="0" variant="outlined" style={{ marginRight: '20px' }} inputProps={{ style: { textAlign: 'center', fontSize: '20px' } }}
                             error={errorGain4}
-                            helperText={errorGain4 ? 'הכנס מספר' : ''}
+                            helperText={errorGain4 ? 'הכנס מספר חיובי' : ''}
                             onChange={(e) => { handleGain4Change(e.target.value) }} />
-                        <Typography variant="subtitle1" style={{ marginRight: '20px', textAlign: 'right' }}>
+                        <Typography variant="subtitle1" style={{ marginRight: '20px', textAlign: 'right', fontSize: '20px' }}>
                             <b>:רווח כספי עבור שלוקר</b>
                         </Typography>
-                        <TextField defaultValue="8" variant="outlined" style={{ marginRight: '20px' }} inputProps={{ style: { textAlign: 'center' } }}
+                        <TextField defaultValue="8" variant="outlined" style={{ marginRight: '20px' }} inputProps={{ style: { textAlign: 'center', fontSize: '20px' } }}
                             error={errorHours}
-                            helperText={errorHours ? 'הכנס מספר' : ''}
+                            helperText={errorHours ? 'הכנס מספר חיובי' : ''}
                             onChange={(e) => { handleHoursChange(e.target.value) }} />
-                        <Typography variant="subtitle1" style={{ marginRight: '20px', textAlign: 'right' }}>
+                        <Typography variant="subtitle1" style={{ marginRight: '20px', textAlign: 'right', fontSize: '20px' }}>
                             <b>:הכנס מספר שעות עבודה</b>
                         </Typography>
                     </div>
                     <div style={{ display: 'grid', gridTemplateColumns: 'max-content auto', alignItems: 'center', justifyContent: 'flex-end' }}>
-                        <Button variant="contained" component="label" style={{color: 'rgb(255, 215, 0)', backgroundColor: 'rgb(0, 102, 51)', fontWeight: "bold" }}>
+                        <Button variant="contained" component="label" style={{color: 'rgb(255, 215, 0)', backgroundColor: 'rgb(0, 102, 51)', fontWeight: "bold", fontSize: '20px' }}>
                             {selectedFile ? selectedFile.name : 'העלאת קובץ'}
                             <input type="file" style={{ display: 'none' }}
                                 accept="application/vnd.ms-excel, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
                                 onChange={handleFileChange} />
                         </Button>
-                        <Typography variant="subtitle1" style={{ marginRight: '20px', marginLeft: '24px', textAlign: 'right' }}>
+                        <Typography variant="subtitle1" style={{ marginRight: '20px', marginLeft: '24px', textAlign: 'right', fontSize: '20px' }}>
                             <b>:הכנסת קובץ אקסל</b>
                         </Typography>
                     </div>
