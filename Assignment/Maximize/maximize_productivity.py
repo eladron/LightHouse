@@ -230,7 +230,7 @@ def main():
         print(f"{STATIONS_NAMES[s]} made {made[s]} and needed {Q[s]}")
     data['product_piston'] = made[0]
     data['product_handle'] = made[1] if made[1] < made[0] else made[0]
-    data['product_water'] = made[2] if made[2] < made[1] else made[1]
+    data['product_water'] = made[2] if made[2] < made[1] else min(made[0], made[1])
     data['product_screw'] = made[3] 
     
     best_productivity = min(made[:3]) * S[0] + made[3] * S[1]
