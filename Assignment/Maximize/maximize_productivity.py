@@ -31,7 +31,7 @@ def error(message: str = ""):
     data = {"Status" : "Error","Message": message}
     with open("output.json", 'w') as f:
         json.dump(data, f, indent=4)
-    exit(1)
+    exit(0)
 
 # Handle the is coming column
 def handle_is_comming(df: pd.DataFrame):
@@ -157,7 +157,6 @@ def start_ascending(workers_names, station_counts, prod, Q, P, T, S, assign):
             Q[2] = last_Q_2
             break
         else:
-            made = get_product_made(range(len(STATIONS_NAMES)), range(len(workers_names)),  P, tmp_assign, prod, T)
             best_assign = tmp_assign
     return best_assign
 
