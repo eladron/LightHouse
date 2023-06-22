@@ -12,6 +12,7 @@ import { API_URL } from '../../../utils';
 import logoImage from '../../../migdal_or.png';
 import '../../../themes.css';
 import { subscribe } from 'diagnostics_channel';
+import { colors } from '@mui/material';
 
 export interface MenuPageProps {
     changePage(newPage: number): void;
@@ -27,10 +28,11 @@ export const MenuPage: React.FC<MenuPageProps> = ({
     ]);
 
     const [subtractionValues, setSubtractionValues] = React.useState<Array<number>>([0, 0, 0, 0]);
+    
+    const [errorMessage, setErrorMessage] = React.useState<String>("");
 
     React.useEffect(() => {
         setSubtractionValues(calculateSubtraction(tableValues));
-        console.log(subtractionValues)
         }, [tableValues]);
 
     
@@ -132,8 +134,18 @@ export const MenuPage: React.FC<MenuPageProps> = ({
         })
             .then(res => {
                 if (res.status === 200) {
-                    global.placements = res.data;
-                    changePage(1);
+                    if (res.data["Status"] === "Success") {
+                        const { Status, ...placementsWithoutStatus } = res.data;
+                        global.placements = placementsWithoutStatus;
+                        console.log(global.placements)
+                        changePage(1);
+                    }
+                    else {
+                        if (res.data["Error"] == "0") {
+
+                        }
+                        setErrorMessage(res.data["Message"])
+                    }
                 }
             })
             .catch(err => {
@@ -161,7 +173,6 @@ export const MenuPage: React.FC<MenuPageProps> = ({
                 subtraction[i] = row1Values[i] - row2Values[i];
             }
         }  
-        console.log(subtraction)
         return subtraction;
       };
       
@@ -266,6 +277,11 @@ export const MenuPage: React.FC<MenuPageProps> = ({
                         </Typography>
                     </div>
                 </div>
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'center', marginTop: '50px' }}>
+                <text style={{ textAlign: 'center', fontSize: '20px', color: '#FF0000', fontWeight: 'bold' }}>
+                    {errorMessage}
+                </text>
             </div>
             <div style={{ display: 'flex', justifyContent: 'center', marginTop: '50px' }}>
                 <Button variant="contained" size="large"
