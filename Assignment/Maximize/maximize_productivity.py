@@ -8,6 +8,7 @@ import json
 
 CANTWORK = -1000000 # represents a worker that can't work in a station
 STATIONS_NAMES = ["piston", "handle", "water", "screw"] # The names of the stations
+STATIONS_NAMES_HEBREW = ["בוכנה", "ידית ישר","עמדת מים", "ברגים"] # The names of the stations
 
 # Custom function to replace strings representing numbers with integers
 def replace_string_with_integer(cell):
@@ -36,10 +37,10 @@ def error(message: str = ""):
 # Handle the is coming column
 def handle_is_comming(df: pd.DataFrame):
     if df.iloc[0:1, 0].values[0] != "האם מגיע?":
-        error("is coming column is missing isn't the first column")
+        error("העמודה הראשונה האם מגיע? חסרה")
     is_all_integers = df.iloc[1:-1, 0].apply(lambda x: x==0 or x==1).all()
     if not is_all_integers:
-        error("is coming column is not all 0 or 1")
+        error("העמודה האם מגיע? מכילה מספרים שאינם 0 או 1")
     df = df.loc[df.iloc[:, 0] != 0]
     df = df.iloc[:, 1:] # Remove the is coming column
     return df
@@ -48,7 +49,7 @@ def handle_is_comming(df: pd.DataFrame):
 def handle_station_counts(df: pd.DataFrame):
     station_counts = list(df.iloc[-1])
     if (any( not isinstance(x, int) or x <= 0 for x in station_counts)):
-        error("station counts row is not all positive integers")
+        error("השורה של כמות המכונות אינה מכילה מספרים חיובים שלמים")
     df.drop(index=df.index[-1], axis=0, inplace=True)
     return station_counts, df
 
@@ -57,10 +58,13 @@ def handle_workers_productivity(df: pd.DataFrame):
     for i in range(0, len(df.columns)):
         are_positive_integers = df.iloc[:, i].apply(lambda x: isinstance(x, int) and (x>0 or x == CANTWORK)).all()
         if not are_positive_integers:
-            error(f"column {STATIONS_NAMES[i]} is not all positive integers (except {CANTWORK}/#)")
+            error(f"העמודה {i+1}  אינה מכילה מספרים שלמים חיוביים למעט #")
 
 def preprocess():
-    df = pd.read_excel(sys.argv[1], index_col=0)
+    try:
+        df = pd.read_excel(sys.argv[1], index_col=0)
+    except:
+        error("הקובץ אינו קובץ מסוג אקסל")
     df = df.applymap(replace_string_with_integer)
     df = handle_is_comming(df)
     replace_special_strings(df)
@@ -185,7 +189,7 @@ def main():
 
 
     if best_productivity == 0:
-        error("No solution found")
+        error("אין שיבוץ אפשרי, אנא בדוק את הנתונים שהוכנסו בקובץ האקסל או הנתונים באתר")
     
     if best_count != 0:
         print("Warning: not all constrains are met")
