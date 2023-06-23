@@ -246,7 +246,7 @@ def main():
     
     best_productivity = min(made[:3]) * S[0] + made[3] * S[1]
     print("Total Productivity:", best_productivity / 100)
-    data['revenue'] = best_productivity / 100
+    data['revenue'] = str(best_productivity / 100)
 
     print("Constrains removed:", best_count)
 
