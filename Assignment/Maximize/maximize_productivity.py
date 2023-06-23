@@ -84,7 +84,7 @@ def generate_arrays(i, n):
             yield [j] + arr
 
 
-def solve_aux(workers_names, station_counts, prod, Q, P, T, S ,add_kedam = True):
+def solve_aux(workers_names, station_counts, prod, Q, P, T, S, add_kedam):
     workers = range(len(workers_names))
     stations = range(len(STATIONS_NAMES))
 
@@ -104,8 +104,10 @@ def solve_aux(workers_names, station_counts, prod, Q, P, T, S ,add_kedam = True)
         problem += pulp.lpSum(assign[w][s] for w in workers) == station_counts[s] # every station has exactly the required number of workers
     problem += pulp.lpSum(assign[w][s] for w in workers for s in stations) == min(len(workers_names), 20) # at most 20 workers are assigned
     for s in stations:
-        tmp = Q[s] if s > 2 else Q[2]
-        problem += P[s] + pulp.lpSum(assign[w][s] * prod[w][s] * T for w in workers) >= tmp # every station has at least the required amount of product
+        tmp = Q[s]
+        if s < 2:
+            tmp = max(Q[s], Q[s+1] - P[s+1]) # The station inside the pipeline has to have at the end of the day more that what that next station had to made
+        problem += P[s] + pulp.lpSum(assign[w][s] * prod[w][s] * T for w in workers) >= tmp # At the end of the day, each station has made at least the required amount of product
     if add_kedam:
         for i in range(2):
             problem += P[i] + pulp.lpSum(assign[w][i] * prod[w][i] * T for w in workers) >= P[i+1] + pulp.lpSum(assign[w][i+1] * prod[w][i+1] * T for w in workers) # every station has more product than the next station
@@ -154,11 +156,14 @@ def get_product_made(stations, workers,  P, assign, prod, T):
 def start_ascending(workers_names, station_counts, prod, Q, P, T, S, assign):
     best_assign = assign
     while True:
-        last_Q_2 = Q[2]
-        Q[2] = int(Q[2] * 1.1)
+        made = get_product_made(range(len(STATIONS_NAMES)), range(len(workers_names)),  P, best_assign, prod, T)
+        min_made = min(made[:2])
+        min_index = made.index(min_made)
+        last_Q_i = Q[min_index]
+        Q[min_index] = int(Q[min_index] * 1.1)
         temp_prod, tmp_assign, _ = solve(workers_names, station_counts, prod, Q, P, T, S, False)
         if temp_prod == 0:
-            Q[2] = last_Q_2
+            Q[min_index] = last_Q_i
             break
         else:
             best_assign = tmp_assign
@@ -190,16 +195,18 @@ def main():
 
     if best_productivity == 0:
         error("אין שיבוץ אפשרי, אנא בדוק את הנתונים שהוכנסו בקובץ האקסל או הנתונים באתר")
+
     
     if best_count != 0:
         print("Warning: not all constrains are met")
-        last_Q_2 = Q[2]
+        last_Q = Q.copy()
         best_assign = start_ascending(workers_names, station_counts, prod, Q, P, T, S, best_assign)
-        Q[2] = last_Q_2
+        Q = last_Q
+    
 
     workers = range(len(workers_names))
     stations = range(len(STATIONS_NAMES))
-    random_workers = random.sample(workers, len(workers_names))
+    random_workers = workers #random.sample(workers, len(workers_names))
     assigned_workers = []
 
     data["Status"] = "Success"
@@ -227,7 +234,11 @@ def main():
     
     made = get_product_made(stations, workers,  P, best_assign, prod, T)
     for s in stations:
-        print(f"{STATIONS_NAMES[s]} made {made[s]} and needed {Q[s]}")
+        tmp = made[s]
+        if s in [1,2]:
+            tmp = made[s] if made[s] < made[s-1] else made[s-1]
+        print(f"{STATIONS_NAMES[s]} made {tmp} and needed {Q[s]}")
+    
     data['product_piston'] = made[0]
     data['product_handle'] = made[1] if made[1] < made[0] else made[0]
     data['product_water'] = made[2] if made[2] < made[1] else min(made[0], made[1])
