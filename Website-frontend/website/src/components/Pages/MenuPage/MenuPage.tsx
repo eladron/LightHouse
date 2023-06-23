@@ -122,6 +122,7 @@ export const MenuPage: React.FC<MenuPageProps> = ({
     const handleSubmit = async (event: any) => {
         event.preventDefault();
         axios.defaults.withCredentials = true;
+        setErrorMessage("");
         const formData = new FormData();
         formData.append('file', selectedFile ? selectedFile : "");
         formData.append('hours', hours.toString());
@@ -134,16 +135,23 @@ export const MenuPage: React.FC<MenuPageProps> = ({
         })
             .then(res => {
                 if (res.status === 200) {
+                    console.log(res.data)
                     if (res.data["Status"] === "Success") {
-                        const { Status, ...placementsWithoutStatus } = res.data;
-                        global.placements = placementsWithoutStatus;
+                        global.revenue = res.data["revenue"];
+                        console.log(res.data["revenue"]);
+                        global.product_screws = res.data["product_screw"];
+                        console.log(res.data["product_screw"]);
+                        global.product_water = res.data["product_water"];
+                        console.log(res.data["product_water"]);
+                        global.product_piston = res.data["product_piston"];
+                        console.log(res.data["product_piston"]);
+                        global.product_handle = res.data["product_handle"];
+                        const { Status, revenue, product_screw, product_water, product_piston, product_handle, ...cleanPlacements } = res.data;
+                        global.placements = cleanPlacements;
                         console.log(global.placements)
                         changePage(1);
                     }
                     else {
-                        if (res.data["Error"] == "0") {
-
-                        }
                         setErrorMessage(res.data["Message"])
                     }
                 }
@@ -243,23 +251,26 @@ export const MenuPage: React.FC<MenuPageProps> = ({
             <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '70px' }}>
                 <div style={{ display: 'grid', gridTemplateColumns: 'auto', gap: '20px', marginRight: '80px' }}>
                     <div style={{ display: 'flex', alignItems: 'center' }}>
-                        <TextField defaultValue="0" variant="outlined" style={{ marginRight: '20px' }} inputProps={{ style: { textAlign: 'center', fontSize: '20px' } }}
+                        <TextField defaultValue="27" variant="outlined" style={{ marginRight: '20px' }} inputProps={{ style: { textAlign: 'center', fontSize: '20px' } }}
                             error={errorGain3}
                             helperText={errorGain3 ? 'הכנס מספר חיובי' : ''}
-                            onChange={(e) => { handleGain3Change(e.target.value) }} />
+                            onChange={(e) => { handleGain3Change(e.target.value) }}
+                            onFocus={(e) => e.target.value = ''} />
                         <Typography variant="subtitle1" style={{ marginRight: '20px', textAlign: 'right' ,fontSize: '20px' }}>
                             <b>:רווח כספי עבור ברגים</b>
                         </Typography>
-                        <TextField defaultValue="0" variant="outlined" style={{ marginRight: '20px' }} inputProps={{ style: { textAlign: 'center', fontSize: '20px' } }}
+                        <TextField defaultValue="0.1" variant="outlined" style={{ marginRight: '20px' }} inputProps={{ style: { textAlign: 'center', fontSize: '20px' } }}
                             error={errorGain4}
                             helperText={errorGain4 ? 'הכנס מספר חיובי' : ''}
-                            onChange={(e) => { handleGain4Change(e.target.value) }} />
+                            onChange={(e) => { handleGain4Change(e.target.value) }}
+                            onFocus={(e) => e.target.value = ''} />
                         <Typography variant="subtitle1" style={{ marginRight: '20px', textAlign: 'right', fontSize: '20px' }}>
                             <b>:רווח כספי עבור שלוקר</b>
                         </Typography>
                         <TextField defaultValue="8" variant="outlined" style={{ marginRight: '20px' }} inputProps={{ style: { textAlign: 'center', fontSize: '20px' } }}
                             error={errorHours}
                             helperText={errorHours ? 'הכנס מספר חיובי' : ''}
+                            onFocus={(e) => e.target.value = ''}
                             onChange={(e) => { handleHoursChange(e.target.value) }} />
                         <Typography variant="subtitle1" style={{ marginRight: '20px', textAlign: 'right', fontSize: '20px' }}>
                             <b>:הכנס מספר שעות עבודה</b>
