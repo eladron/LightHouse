@@ -46,9 +46,9 @@ export const MenuPage: React.FC<MenuPageProps> = ({
     const [errorGain3, setErrorGain3] = React.useState<boolean>(false);
     const [errorGain4, setErrorGain4] = React.useState<boolean>(false);
 
-    const [hours, setHours] = React.useState<number>(0);
-    const [gain3, setGain3] = React.useState<number>(0);
-    const [gain4, setGain4] = React.useState<number>(0);
+    const [hours, setHours] = React.useState<number>(8);
+    const [gain3, setGain3] = React.useState<number>(0.1);
+    const [gain4, setGain4] = React.useState<number>(27);
     const [error, setError] = React.useState<String>("");
     const [selectedFile, setSelectedFile] = React.useState<File | null>(null);
 
@@ -129,7 +129,6 @@ export const MenuPage: React.FC<MenuPageProps> = ({
         formData.append('gain3', gain3.toString());
         formData.append('gain4', gain4.toString());
         formData.append('tableValues', JSON.stringify(tableValues.slice(0, 2)));
-        console.log(formData);
         await axios.post(`${API_URL}/api/calculate`, formData, {
             headers: { 'Content-Type': 'multipart/form-data' }
         })
@@ -137,18 +136,14 @@ export const MenuPage: React.FC<MenuPageProps> = ({
                 if (res.status === 200) {
                     console.log(res.data)
                     if (res.data["Status"] === "Success") {
-                        global.revenue = res.data["revenue"];
-                        console.log(res.data["revenue"]);
                         global.product_screws = res.data["product_screw"];
-                        console.log(res.data["product_screw"]);
                         global.product_water = res.data["product_water"];
-                        console.log(res.data["product_water"]);
                         global.product_piston = res.data["product_piston"];
-                        console.log(res.data["product_piston"]);
                         global.product_handle = res.data["product_handle"];
+                        global.revenue = res.data['revenue']
                         const { Status, revenue, product_screw, product_water, product_piston, product_handle, ...cleanPlacements } = res.data;
                         global.placements = cleanPlacements;
-                        console.log(global.placements)
+                        console.log(global.revenue)
                         changePage(1);
                     }
                     else {
