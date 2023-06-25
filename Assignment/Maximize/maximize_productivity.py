@@ -187,7 +187,7 @@ def main():
     print(f"P = {P}")
     print(f"T = {T}")
     print(f"S = {S}")
-    places_for_station_water = [1, 2, 5]
+    places_for_station_water = [2, 5, 13]
     prod = [list(df.loc[worker]) for worker in workers_names]
 
     best_productivity , best_assign, best_count = solve(workers_names, station_counts, prod, Q, P, T, S)
