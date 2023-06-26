@@ -46,9 +46,9 @@ export const MenuPage: React.FC<MenuPageProps> = ({
     const [errorGain3, setErrorGain3] = React.useState<boolean>(false);
     const [errorGain4, setErrorGain4] = React.useState<boolean>(false);
 
-    const [hours, setHours] = React.useState<number>(8);
-    const [gain3, setGain3] = React.useState<number>(0.1);
-    const [gain4, setGain4] = React.useState<number>(27);
+    const [hours, setHours] = React.useState<number>(5);
+    const [gain3, setGain3] = React.useState<number>(0.15);
+    const [gain4, setGain4] = React.useState<number>(0.05);
     const [error, setError] = React.useState<String>("");
     const [selectedFile, setSelectedFile] = React.useState<File | null>(null);
 
@@ -246,23 +246,23 @@ export const MenuPage: React.FC<MenuPageProps> = ({
             <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '70px' }}>
                 <div style={{ display: 'grid', gridTemplateColumns: 'auto', gap: '20px', marginRight: '80px' }}>
                     <div style={{ display: 'flex', alignItems: 'center' }}>
-                        <TextField defaultValue="27" variant="outlined" style={{ marginRight: '20px' }} inputProps={{ style: { textAlign: 'center', fontSize: '20px' } }}
-                            error={errorGain3}
-                            helperText={errorGain3 ? 'הכנס מספר חיובי' : ''}
-                            onChange={(e) => { handleGain3Change(e.target.value) }}
-                            onFocus={(e) => e.target.value = ''} />
-                        <Typography variant="subtitle1" style={{ marginRight: '20px', textAlign: 'right' ,fontSize: '20px' }}>
-                            <b>:רווח כספי עבור ברגים</b>
-                        </Typography>
-                        <TextField defaultValue="0.1" variant="outlined" style={{ marginRight: '20px' }} inputProps={{ style: { textAlign: 'center', fontSize: '20px' } }}
+                        <TextField defaultValue="0.05" variant="outlined" style={{ marginRight: '20px' }} inputProps={{ style: { textAlign: 'center', fontSize: '20px' } }}
                             error={errorGain4}
                             helperText={errorGain4 ? 'הכנס מספר חיובי' : ''}
                             onChange={(e) => { handleGain4Change(e.target.value) }}
                             onFocus={(e) => e.target.value = ''} />
                         <Typography variant="subtitle1" style={{ marginRight: '20px', textAlign: 'right', fontSize: '20px' }}>
+                            <b>:רווח כספי עבור ברגים</b>
+                        </Typography>
+                        <TextField defaultValue="0.15" variant="outlined" style={{ marginRight: '20px' }} inputProps={{ style: { textAlign: 'center', fontSize: '20px' } }}
+                            error={errorGain3}
+                            helperText={errorGain3 ? 'הכנס מספר חיובי' : ''}
+                            onChange={(e) => { handleGain3Change(e.target.value) }}
+                            onFocus={(e) => e.target.value = ''} />
+                        <Typography variant="subtitle1" style={{ marginRight: '20px', textAlign: 'right' ,fontSize: '20px' }}>
                             <b>:רווח כספי עבור שלוקר</b>
                         </Typography>
-                        <TextField defaultValue="8" variant="outlined" style={{ marginRight: '20px' }} inputProps={{ style: { textAlign: 'center', fontSize: '20px' } }}
+                        <TextField defaultValue="5" variant="outlined" style={{ marginRight: '20px' }} inputProps={{ style: { textAlign: 'center', fontSize: '20px' } }}
                             error={errorHours}
                             helperText={errorHours ? 'הכנס מספר חיובי' : ''}
                             onFocus={(e) => e.target.value = ''}
