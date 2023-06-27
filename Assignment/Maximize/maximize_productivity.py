@@ -153,7 +153,8 @@ def get_product_made(stations, workers,  P, assign, prod, T):
 
 def start_ascending(workers_names, station_counts, prod, Q, P, T, S, assign):
     best_assign = assign
-    while True:
+    i = 0 
+    while i < 40:
         made = get_product_made(range(len(STATIONS_NAMES)), range(len(workers_names)),  P, best_assign, prod, T)
         min_made = min(made[:2])
         min_index = made.index(min_made)
@@ -165,6 +166,7 @@ def start_ascending(workers_names, station_counts, prod, Q, P, T, S, assign):
             break
         else:
             best_assign = tmp_assign
+            i+=1
     return best_assign
 
 
