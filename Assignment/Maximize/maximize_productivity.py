@@ -88,7 +88,6 @@ def solve_aux(workers_names, station_counts, prod, Q, P, T, S, add_kedam):
     workers = range(len(workers_names))
     stations = range(len(STATIONS_NAMES))
 
-
     problem = pulp.LpProblem("Worker_Station_Assignment", pulp.LpMaximize)
     # create the decision variables
     assign = pulp.LpVariable.dicts("Assign", (workers, stations), lowBound=0, upBound=1, cat=pulp.LpInteger)
@@ -96,10 +95,9 @@ def solve_aux(workers_names, station_counts, prod, Q, P, T, S, add_kedam):
     # define the objective function to maximize the total productivity    
     objective = pulp.lpSum(((prod[i][2] * assign[i][2] * S[0] + prod[i][3] * assign[i][3] * S[1]) * T) for i in workers)
     problem += objective
-
     # add the constraints
     for w in workers:
-        problem += pulp.lpSum(assign[w][s] for s in stations) <= 1 # every worker is assigned to exactly one station
+        problem += pulp.lpSum(assign[w][s] for s in stations) <= 1 # every worker is assigned to at most one station
     for s in stations:
         problem += pulp.lpSum(assign[w][s] for w in workers) == station_counts[s] # every station has exactly the required number of workers
     problem += pulp.lpSum(assign[w][s] for w in workers for s in stations) == min(len(workers_names), 20) # at most 20 workers are assigned
@@ -210,7 +208,6 @@ def main():
     assigned_workers = []
 
     data["Status"] = "Success"
-
     for i in range(1, 21):
         if i in places_for_station_water:
             for w in random_workers:
@@ -222,11 +219,13 @@ def main():
         else:
             for w in random_workers:
                 if workers_names[w] not in assigned_workers:
-                    assigned = 0
-                    for s in stations:
+                    assigned = -1
+                    for s in [0,1,3]:
                         if pulp.value(best_assign[w][s]) == 1:
                             assigned = s
                             break
+                    if assigned == -1:
+                        continue
                     insert_to_data(data, i, workers_names[w], STATIONS_NAMES[assigned])
                     print(f"Station {i},{STATIONS_NAMES[assigned]} is assigned with worker {workers_names[w]}")
                     assigned_workers.append(workers_names[w])
@@ -238,7 +237,7 @@ def main():
         if s in [1,2]:
             tmp = made[s] if made[s] < made[s-1] else made[s-1]
         print(f"{STATIONS_NAMES[s]} made {tmp} and needed {Q[s]}")
-    
+    print(len(assigned_workers))
     data['product_piston'] = made[0]
     data['product_handle'] = made[1] if made[1] < made[0] else made[0]
     data['product_water'] = made[2] if made[2] < made[1] else min(made[0], made[1])
