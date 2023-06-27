@@ -206,7 +206,7 @@ def main():
 
     workers = range(len(workers_names))
     stations = range(len(STATIONS_NAMES))
-    random_workers = workers #random.sample(workers, len(workers_names))
+    random_workers = random.sample(workers, len(workers_names))
     assigned_workers = []
 
     data["Status"] = "Success"
