@@ -199,12 +199,12 @@ export const MenuPage: React.FC<MenuPageProps> = ({
                             </TableCell>
                             <TableCell align='center'>
                                 <Typography variant="subtitle1" fontWeight="bold" fontSize={'20px'}>
-                                    בוכנה
+                                    ידית ישר
                                 </Typography>
                             </TableCell>
                             <TableCell align='center'>
                                 <Typography variant="subtitle1" fontWeight="bold" fontSize={'20px'}>
-                                    ידית ישר
+                                    בוכנה   
                                 </Typography>
                             </TableCell>
                         </TableRow>

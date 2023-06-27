@@ -71,7 +71,7 @@ def preprocess():
     df.drop(columns = df.columns[-1], inplace=True) # Last column is irrelevant
     station_counts, df = handle_station_counts(df)
     handle_workers_productivity(df)
-    workers_names = [int(x) for x in list(df.index)]
+    workers_names = [x for x in list(df.index)]
     df.index = workers_names
     return df, station_counts, workers_names
 
