@@ -1,0 +1,88 @@
+{
+    "Status": "Success",
+    "1": {
+        "worker": 20,
+        "station": "handle"
+    },
+    "2": {
+        "worker": 18,
+        "station": "water"
+    },
+    "3": {
+        "worker": 19,
+        "station": "piston"
+    },
+    "4": {
+        "worker": 7,
+        "station": "handle"
+    },
+    "5": {
+        "worker": 16,
+        "station": "water"
+    },
+    "6": {
+        "worker": 3,
+        "station": "screw"
+    },
+    "7": {
+        "worker": 11,
+        "station": "screw"
+    },
+    "8": {
+        "worker": 15,
+        "station": "handle"
+    },
+    "9": {
+        "worker": 9,
+        "station": "screw"
+    },
+    "10": {
+        "worker": "\u05d0\u05d5\u05e8",
+        "station": "screw"
+    },
+    "11": {
+        "worker": 17,
+        "station": "piston"
+    },
+    "12": {
+        "worker": 14,
+        "station": "screw"
+    },
+    "13": {
+        "worker": 8,
+        "station": "water"
+    },
+    "14": {
+        "worker": 10,
+        "station": "piston"
+    },
+    "15": {
+        "worker": 4,
+        "station": "screw"
+    },
+    "16": {
+        "worker": 6,
+        "station": "screw"
+    },
+    "17": {
+        "worker": "\u05d0\u05dc\u05e2\u05d3",
+        "station": "screw"
+    },
+    "18": {
+        "worker": 13,
+        "station": "screw"
+    },
+    "19": {
+        "worker": 12,
+        "station": "screw"
+    },
+    "20": {
+        "worker": 5,
+        "station": "screw"
+    },
+    "product_piston": 3000.0,
+    "product_handle": 3000.0,
+    "product_water": 3000.0,
+    "product_screw": 5900.0,
+    "revenue": "7.45"
+}

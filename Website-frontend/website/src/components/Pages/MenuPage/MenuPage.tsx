@@ -129,7 +129,7 @@ export const MenuPage: React.FC<MenuPageProps> = ({
         formData.append('gain3', gain3.toString());
         formData.append('gain4', gain4.toString());
         formData.append('tableValues', JSON.stringify(tableValues.slice(0, 2)));
-        await axios.post(`${API_URL}/api/calculate`, formData, {
+        await axios.post(`${API_URL}`, formData, {
             headers: { 'Content-Type': 'multipart/form-data' }
         })
             .then(res => {
