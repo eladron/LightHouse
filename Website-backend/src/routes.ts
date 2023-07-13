@@ -20,7 +20,7 @@ export const calcPlacements = async (req: Request, res: Response) => {
     writeFileSync(IN_FILE_PATH, file.buffer, {
       flag: 'w',
     });
-    const proc = spawn('python3', ['/home/migdalor/LightHouse/Assignment/Maximize/maximize_productivity.py',IN_FILE_PATH, tableValues[0][2], tableValues[0][3], tableValues[0][1], tableValues[0][0], tableValues[1][2], tableValues[1][3], tableValues[1][1], tableValues[1][0], hours, gain3, gain4]);
+    const proc = spawn('python3', ['/home/migdalor/LightHouse/Assignment/Maximize/maximize_productivity.py',IN_FILE_PATH, tableValues[0][3], tableValues[0][2], tableValues[0][1], tableValues[0][0], tableValues[1][3], tableValues[1][2], tableValues[1][1], tableValues[1][0], hours, gain3, gain4]);
     /**proc.stdout.on('data', (data) => {
       console.log(`stdout: ${data}`);
     });

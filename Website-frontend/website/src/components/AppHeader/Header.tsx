@@ -22,7 +22,7 @@ export const Header: React.FC<HeaderProps> = ({
     };
 
     return (
-        <AppBar position="sticky" color="primary">
+        <AppBar position="sticky" style={{backgroundColor:"rgb(0, 102, 51)", color:"rgb(255,215,0)"}}>
             <Container maxWidth="xl">
                 <Toolbar disableGutters sx={{ display: 'flex' }}>
                     { page === 1 ?
