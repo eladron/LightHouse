@@ -36,9 +36,17 @@ This process gives an approximation of the last constraints.
 
 ## Website description :
 The Front end of the website is written in React.
-The first page is the input page where the manager of the department can put the inputs to the algorithm. The second page is the result page with the graphic display of the department.
+The input page - where the manager of the department can put the inputs to the algorithm.
+![image](https://github.com/eladron/LightHouse/assets/63602693/23af9e29-f242-4a8b-ad70-6707c11640b0)
+
+
+The result page with the graphic display of the department.
+![image](https://github.com/eladron/LightHouse/assets/63602693/c3ca817b-538f-4508-9ea8-a2c9e6e92926)
 
 The backend is running in Google functions.
+
+
+
 
 ## Folder description :
 * Assignment: Folder contains the implementation of some algorithms. Contains also initial attempts with brute force and lloyd-shaply algorithms.
